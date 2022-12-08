@@ -14,7 +14,8 @@ An implementation of [@adiwajshing/Baileys](https://github.com/adiwajshing/Baile
 
 ## Installation
 ```
-git clone https://
+git clone https://github.com/daimus/whatsapp-api
+cd whatsapp-api
 yarn install
 ```
 Start development mode
@@ -47,37 +48,44 @@ DEFAULT_COUNTRY_CODE = 'ID' # Default country for formatting phone number
 
 ## API Documentation
 ### Starting Session
-To start the session you need to run the app by running command ``yarn start`` (run the built) or ``yarn dev`` (run development mode). You will receive QR Code if current session doesn't exist. Add `--new` arg to create new session.
+To start the session you need to run the app by running command ``yarn start`` (run the built) or ``yarn dev`` (run development mode). This command will run the app and continue previous session (if exist). If previous session doesn't exist You will receive QR Code to scan in the WhatsApp app.
+
+Add `--new` arg into to delete previous session and start new session.
+```
+yarn start --new
+or
+yarn dev --new
+```
 ### Authentication
 Every endpoint is using Bearer Token as the authentication method. To get the token, make POST request to ``/api/auth/signin`` with username and password request body
 ```
-curl --location --request POST '/api/auth/signin' \
---header 'Content-Type: application/json' \
---data-raw '{
+POST /api/auth/signin
+
+{
     "username": "user",
     "password": "password"
-}'
+}
 ```
+You will receive the token if the credentials is valid. Attach that token as Authorization Bearer header for every request.
 ### Verify WhatsApp Number
 ```
-curl --location --request GET 'localhost:3000/api/contacts/PHONE_NUMBER/verify?countryCode=COUNTRY_CODE' \
---header 'Authorization: Bearer YOUR_TOKEN'
+GET /api/contacts/PHONE_NUMBER/verify?countryCode=COUNTRY_CODE
 ```
 ### Sending Message
 Sending message will create a new Agenda job. You can send the message to a receiver by passing receiver in data body. You can send to many receivers also by passing array of receiver as receivers in data body.
 ```
-curl --location --request POST '/api/messages' \
---header 'Authorization: Bearer YOUR_TOKEN' \
---header 'Content-Type: application/json' \
---data-raw '{
+POST /api/messages
+
+{
     "receiver": "PHONE_NUMBER_OR_JID",
     "message": {
-        "text": "vel"
+        "text": "Hello world"
     }
-}'
+}
 ```
+whatsapp-api also support various message type like image, audio, video, button, template button, list, location, etc. Please visit full API Documentation for more example.
 ### Incoming Message Webhook
-You can enable webhook for incoming whatsapp message by configure `INCOMING_MESSAGE_WEBHOOK_URL` in `.env`. This webhook will execute POST request with body
+You can enable webhook for incoming whatsapp message by configure `INCOMING_MESSAGE_WEBHOOK_URL` in `.env`. This webhook will execute POST request, and then you will receive data body like this
 ```
 {
   "sender" : string,
@@ -103,10 +111,11 @@ You can enable webhook to receive update the message that you sent via this REST
 }
 ```
 
+### Visit [https://documenter.getpostman.com/view/5302683/2s8YzQWjR5](https://documenter.getpostman.com/view/5302683/2s8YzQWjR5) for complete API Documentation
+
 ## Todo
-1. Complete API Documentation
-2. Unit testing
-3. Incoming/update message hook auth
-4. Retry failing job
-5. Report
-6. Create docker image
+1. Unit testing
+2. Incoming/update message hook auth
+3. Retry failing job
+4. Report
+5. Create docker image
